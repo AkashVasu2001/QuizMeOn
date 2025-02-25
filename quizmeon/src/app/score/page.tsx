@@ -81,7 +81,7 @@ export default function QuizResult() {
   };
 
   const handleHome = () => {
-    router.push("/home"); // Redirect back to home page
+    router.push("/"); // Redirect back to home page
   };
 
   return (
