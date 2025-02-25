@@ -2,12 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Quiz from "@/models/Quiz";
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> } // Note the Promise type
+) {
   try {
-    const { id } = context.params;
+    const { id } = await params; // Await the params to extract 'id'
 
     if (!id) {
-      return NextResponse.json({ error: "Quiz ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Quiz ID is required" },
+        { status: 400 }
+      );
     }
 
     await connectDB();
@@ -20,6 +26,9 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     return NextResponse.json(quiz);
   } catch (error) {
     console.error("Error fetching quiz:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
