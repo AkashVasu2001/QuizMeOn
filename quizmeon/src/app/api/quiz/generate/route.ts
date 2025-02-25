@@ -38,7 +38,7 @@ Return ONLY valid JSON formatted like this inside triple backticks:
 Do not include any extra text before or after the JSON block.`;
 
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const response = await model.generateContent(prompt);
 
     const rawTextResponse = await response.response.text();
