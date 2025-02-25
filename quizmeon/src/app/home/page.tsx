@@ -11,7 +11,7 @@ export default function Home() {
   const [difficulty, setDifficulty] = useState("Easy");
   const [numQuestions, setNumQuestions] = useState(10);
   const [loading, setLoading] = useState(false);
- const [isPending, startTransition] = useTransition();
+ const [, startTransition] = useTransition();
 
   
 
