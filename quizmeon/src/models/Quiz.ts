@@ -8,13 +8,13 @@ interface Question {
 
 export interface IQuiz extends Document {
   title: string;
-  difficulty: "Easy" | "Medium" | "Hard";
+  difficulty: "Easy" | "Intermediate" | "Hard";
   questions: Question[];
 }
 
 const QuizSchema = new Schema<IQuiz>({
   title: { type: String, required: true },
-  difficulty: { type: String, enum: ["Easy", "Medium", "Hard"], required: true },
+  difficulty: { type: String, enum: ["Easy", "Intermediate", "Hard"], required: true },
   questions: [
     {
       question: { type: String, required: true },

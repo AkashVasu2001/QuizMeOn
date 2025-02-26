@@ -26,7 +26,7 @@ export default function Home() {
       });
   
       if (!response.ok) throw new Error("Failed to fetch quiz");
-  
+      console.log("Response:", response);
       const quizData = await response.json();
       
       if (!quizData.questions) throw new Error("Invalid quiz data received");

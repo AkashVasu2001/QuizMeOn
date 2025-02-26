@@ -38,6 +38,7 @@ export default function QuizResult() {
     }
   }, []);
 
+
   const handleShare = async () => {
     if (!quizTitle) {
       alert("No quiz found to share.");
