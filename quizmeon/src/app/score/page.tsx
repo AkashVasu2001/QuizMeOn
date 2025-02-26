@@ -5,28 +5,34 @@ import { useRouter } from "next/navigation";
 
 const SCORE_STORAGE_KEY = "quizScore";
 const QUIZ_STORAGE_KEY = "quizData";
+const USER_ANSWERS_KEY = "userAnswers";
 
 export default function QuizResult() {
   const [quizTitle, setQuizTitle] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [questions, setQuestions] = useState<
+    { question: string; options: string[]; correctAnswer: string }[]
+  >([]);
+  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const router = useRouter();
 
   useEffect(() => {
-    // Retrieve the stored quiz title
-    const storedTitleJSON = localStorage.getItem(QUIZ_STORAGE_KEY);
-    if (storedTitleJSON) {
+    // Retrieve the stored quiz title and questions
+    const storedQuizJSON = localStorage.getItem(QUIZ_STORAGE_KEY);
+    if (storedQuizJSON) {
       try {
-        const storedTitle = JSON.parse(storedTitleJSON);
-        if (storedTitle && storedTitle.title) {
-          setQuizTitle(storedTitle.title);
+        const storedQuiz = JSON.parse(storedQuizJSON);
+        if (storedQuiz && storedQuiz.title && storedQuiz.questions) {
+          setQuizTitle(storedQuiz.title);
+          setQuestions(storedQuiz.questions);
         } else {
-          console.error("Stored title is invalid:", storedTitle);
+          console.error("Invalid quiz data:", storedQuiz);
         }
       } catch (error) {
-        console.error("Error parsing stored title JSON:", error);
+        console.error("Error parsing stored quiz JSON:", error);
       }
     } else {
-      console.warn("No stored title found in localStorage.");
+      console.warn("No quiz data found in localStorage.");
     }
 
     // Retrieve the stored score
@@ -36,53 +42,28 @@ export default function QuizResult() {
     } else {
       console.warn("No stored score found in localStorage.");
     }
-  }, []);
 
-
-  const handleShare = async () => {
-    if (!quizTitle) {
-      alert("No quiz found to share.");
-      return;
-    }
-
-    try {
-      const quizDataJSON = localStorage.getItem(QUIZ_STORAGE_KEY);
-      if (!quizDataJSON) {
-        alert("Quiz data not found!");
-        return;
+    // Retrieve the stored user answers
+    const storedAnswersJSON = localStorage.getItem(USER_ANSWERS_KEY);
+    if (storedAnswersJSON) {
+      try {
+        setUserAnswers(JSON.parse(storedAnswersJSON));
+      } catch (error) {
+        console.error("Error parsing stored user answers JSON:", error);
       }
-
-      const quizData = JSON.parse(quizDataJSON);
-
-      const response = await fetch("/api/quiz/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(quizData),
-      });
-
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Failed to save quiz");
-
-      // Copy link with saved quiz ID
-      const shareUrl = `${window.location.origin}/quiz/${result.quizId}`;
-      navigator.clipboard.writeText(
-        `Take the ${quizTitle} quiz here: ${shareUrl}`
-      );
-      alert("Quiz saved & link copied to clipboard! Share it with your friends.");
-    } catch (error) {
-      console.error("Error sharing quiz:", error);
-      alert("Failed to share quiz. Please try again.");
+    } else {
+      console.warn("No stored answers found in localStorage.");
     }
-  };
+  }, []);
 
   const handleRetry = () => {
     localStorage.removeItem(SCORE_STORAGE_KEY);
-    localStorage.removeItem("userAnswers");
-    router.push("/quiz"); // Redirect back to quiz page
+    localStorage.removeItem(USER_ANSWERS_KEY);
+    router.push("/quiz");
   };
 
   const handleHome = () => {
-    router.push("/"); // Redirect back to home page
+    router.push("/");
   };
 
   return (
@@ -112,19 +93,41 @@ export default function QuizResult() {
         >
           Retake Quiz
         </button>
-
-        <button
-          onClick={handleShare}
-          className="px-5 py-2 text-lg bg-[#A53860] text-white rounded-md shadow-lg hover:bg-[#DA627D] transition-all"
-        >
-          Share the quiz
-        </button>
         <button
           onClick={handleHome}
           className="px-5 py-2 text-lg bg-[#A53860] text-white rounded-md shadow-lg hover:bg-[#DA627D] transition-all"
         >
           Generate New Quiz
         </button>
+      </div>
+
+      {/* Display Questions and Answers */}
+      <div className="mt-10 w-full max-w-3xl bg-white p-6 shadow-lg rounded-lg">
+        <h3 className="text-xl font-bold text-[#450920] text-center mb-4">Your Answers</h3>
+        {questions.length > 0 ? (
+          questions.map((q, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === q.correctAnswer;
+
+            return (
+              <div key={index} className="mb-4 p-4 border rounded-md">
+                <p className="text-lg font-semibold text-[#A53860]">{index + 1}. {q.question}</p>
+                <p className="text-md text-[#450920]">
+                  <span className="font-semibold">Your Answer: </span>
+                  <span className={isCorrect ? "text-green-600" : "text-red-600"}>
+                    {userAnswer || "No Answer"}
+                  </span>
+                </p>
+                <p className="text-md text-[#450920]">
+                  <span className="font-semibold">Correct Answer: </span>
+                  <span className="text-green-600">{q.correctAnswer}</span>
+                </p>
+              </div>
+            );
+          })
+        ) : (
+          <p className="text-center text-lg">No questions available.</p>
+        )}
       </div>
     </div>
   );
