@@ -156,13 +156,13 @@ export default function QuizResult() {
                 <p className="text-xl font-semibold text-[#A53860]">{question.question}</p>
 
                 <div className="mt-2 flex flex-col gap-1">
-  <div className="flex justify-between items-center">
+  <div className="">
     <p className="text-lg font-medium text-gray-700">Your Answer:</p>
     <p className={`text-lg font-bold ${isCorrect ? "text-green-600" : "text-red-600"}`}>
       {userAnswer || "No answer selected"}
     </p>
   </div>
-  <div className="flex justify-between items-center">
+  <div className="">
     <p className="text-lg font-medium text-gray-700">Correct Answer:</p>
     <p className="text-lg font-bold text-green-600">{question.correctAnswer}</p>
   </div>
