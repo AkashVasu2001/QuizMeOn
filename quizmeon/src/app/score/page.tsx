@@ -61,7 +61,9 @@ export default function QuizResult() {
     localStorage.removeItem(USER_ANSWERS_KEY);
     router.push("/quiz");
   };
-
+  const handleHome = () => {
+    router.push("/"); // Redirect back to home page
+  };
   const handleShare = async () => {
     if (!quizTitle) {
       alert("No quiz found to share.");
@@ -130,6 +132,12 @@ export default function QuizResult() {
         >
           Share the quiz
         </button>
+        <button
+          onClick={handleHome}
+          className="px-5 py-2 text-lg bg-[#A53860] text-white rounded-md shadow-lg hover:bg-[#DA627D] transition-all"
+        >
+          Generate New Quiz
+        </button>
       </div>
 
       {/* Questions & Answers Section */}
@@ -144,7 +152,7 @@ export default function QuizResult() {
             const isCorrect = userAnswer === question.correctAnswer;
 
             return (
-              <div key={index} className="mb-6 p-4 border rounded-lg shadow-md bg-white">
+              <div key={index} className="mt-6 p-5 border border-[#450920] shadow-2xl border-x-4 border-y-4 bg-[#FFA5AB] rounded-md w-full max-w-3xl">
                 <p className="text-xl font-semibold text-[#A53860]">{question.question}</p>
 
                 <div className="mt-2">
