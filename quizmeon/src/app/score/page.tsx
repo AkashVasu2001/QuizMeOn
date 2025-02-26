@@ -155,19 +155,19 @@ export default function QuizResult() {
               <div key={index} className="mt-6 p-5 border border-[#450920] shadow-2xl border-x-4 border-y-4 bg-[#FFA5AB] rounded-md w-full max-w-3xl">
                 <p className="text-xl font-semibold text-[#A53860]">{question.question}</p>
 
-                <div className="mt-2">
-                  <p className="text-lg">
-                    <span className="font-medium text-gray-700">Your Answer:</span>{" "}
-                    <span className={isCorrect ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
-                      {userAnswer || "No answer selected"}
-                    </span>
-                  </p>
-                  {!isCorrect && (
-                    <p className="text-lg text-green-600 font-medium">
-                      Correct Answer: {question.correctAnswer}
-                    </p>
-                  )}
-                </div>
+                <div className="mt-2 flex flex-col gap-1">
+  <div className="flex justify-between items-center">
+    <p className="text-lg font-medium text-gray-700">Your Answer:</p>
+    <p className={`text-lg font-bold ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+      {userAnswer || "No answer selected"}
+    </p>
+  </div>
+  <div className="flex justify-between items-center">
+    <p className="text-lg font-medium text-gray-700">Correct Answer:</p>
+    <p className="text-lg font-bold text-green-600">{question.correctAnswer}</p>
+  </div>
+</div>
+
               </div>
             );
           })
