@@ -39,11 +39,14 @@ Do not include any extra text before or after the JSON block.
 
 Rules to follow while generating the quiz:
 -based off of the given description pick an apporopriate title for the quiz
+-if the description is not clear or gibresh then the title should be "Random Quiz" and make a random genral knowledge quiz
 -questions should be based off of the description
 -questions should be of the given difficulty, for easy make it in such a way that someone with a basic understanding of the topic can answer it, for intermediate make it in such a way that someone with a good understanding of the topic can answer it, for hard make it in such a way that someone with an expert understanding of the topic can answer it
 -questions should be unique and it can be of various types like find the incorrect or correct statemnet, odd one out, or other types of questions if applicable
 -questions should be clear and concise and should not be ambiguous and should not have any spelling or grammatical errors 
 -the answer shoould always be correct and should be only one of the options
+-if there is a lengthy corect option then the other should also be of similar length
+-try to minimize all of the above being the answer
 -YOU NEED TO MAKE SURE ITS IN JSON FORMAT AND THE JSON IS VALID
 -DO NOT INCLUDE ANY EXTRA TEXT BEFORE OR AFTER THE JSON BLOCK
 `;
