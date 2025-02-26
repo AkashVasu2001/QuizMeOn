@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 const SCORE_STORAGE_KEY = "quizScore";
 const QUIZ_STORAGE_KEY = "quizData";
+const USER_ANSWERS_KEY = "userAnswers";
 
 interface Question {
   question: string;
@@ -21,26 +22,45 @@ interface QuizData {
 export default function QuizResult() {
   const [quizTitle, setQuizTitle] = useState<string | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({});
   const router = useRouter();
 
   useEffect(() => {
-    // Retrieve the stored quiz title safely
+    // Retrieve stored quiz data
     const storedTitleJSON = localStorage.getItem(QUIZ_STORAGE_KEY);
     if (storedTitleJSON) {
       try {
         const storedData: QuizData = JSON.parse(storedTitleJSON);
         setQuizTitle(storedData.title || "Unknown Quiz");
+        setQuestions(storedData.questions || []);
       } catch (error) {
-        console.error("Error parsing stored quiz data:", error);
+        console.error("Error parsing quiz data:", error);
       }
     }
 
-    // Retrieve the stored score
+    // Retrieve stored score
     const storedScore = localStorage.getItem(SCORE_STORAGE_KEY);
     if (storedScore) {
       setScore(parseInt(storedScore, 10));
     }
+
+    // Retrieve user's selected answers
+    const storedAnswers = localStorage.getItem(USER_ANSWERS_KEY);
+    if (storedAnswers) {
+      try {
+        setUserAnswers(JSON.parse(storedAnswers));
+      } catch (error) {
+        console.error("Error parsing user answers:", error);
+      }
+    }
   }, []);
+
+  const handleRetry = () => {
+    localStorage.removeItem(SCORE_STORAGE_KEY);
+    localStorage.removeItem(USER_ANSWERS_KEY);
+    router.push("/quiz");
+  };
 
   const handleShare = async () => {
     if (!quizTitle) {
@@ -66,7 +86,6 @@ export default function QuizResult() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Failed to save quiz");
 
-      // Copy link with saved quiz ID
       const shareUrl = `${window.location.origin}/quiz/${result.quizId}`;
       navigator.clipboard.writeText(
         `Take the ${quizTitle} quiz here: ${shareUrl}`
@@ -76,16 +95,6 @@ export default function QuizResult() {
       console.error("Error sharing quiz:", error);
       alert("Failed to share quiz. Please try again.");
     }
-  };
-
-  const handleRetry = () => {
-    localStorage.removeItem(SCORE_STORAGE_KEY);
-    localStorage.removeItem("userAnswers");
-    router.push("/quiz");
-  };
-
-  const handleHome = () => {
-    router.push("/");
   };
 
   return (
@@ -115,19 +124,48 @@ export default function QuizResult() {
         >
           Retake Quiz
         </button>
-
         <button
           onClick={handleShare}
           className="px-5 py-2 text-lg bg-[#A53860] text-white rounded-md shadow-lg hover:bg-[#DA627D] transition-all"
         >
           Share the quiz
         </button>
-        <button
-          onClick={handleHome}
-          className="px-5 py-2 text-lg bg-[#A53860] text-white rounded-md shadow-lg hover:bg-[#DA627D] transition-all"
-        >
-          Generate New Quiz
-        </button>
+      </div>
+
+      {/* Questions & Answers Section */}
+      <div className="mt-12 w-full max-w-2xl">
+        <h3 className="text-3xl font-bold text-[#450920] mb-4 text-center">
+          Review Your Answers
+        </h3>
+
+        {questions.length > 0 ? (
+          questions.map((question, index) => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === question.correctAnswer;
+
+            return (
+              <div key={index} className="mb-6 p-4 border rounded-lg shadow-md bg-white">
+                <p className="text-xl font-semibold text-[#A53860]">{question.question}</p>
+
+                <div className="mt-2">
+                  <p className="text-lg">
+                    <span className="font-medium text-gray-700">Your Answer:</span>{" "}
+                    <span className={isCorrect ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+                      {userAnswer || "No answer selected"}
+                    </span>
+                  </p>
+                  {!isCorrect && (
+                    <p className="text-lg text-green-600 font-medium">
+                      Correct Answer: {question.correctAnswer}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <p className="text-xl text-[#450920]">No questions available.</p>
+        )}
       </div>
     </div>
   );
