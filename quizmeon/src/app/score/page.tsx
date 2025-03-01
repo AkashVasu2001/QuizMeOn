@@ -62,6 +62,8 @@ export default function QuizResult() {
     router.push("/quiz");
   };
   const handleHome = () => {
+    localStorage.removeItem(SCORE_STORAGE_KEY);
+    localStorage.removeItem(USER_ANSWERS_KEY);
     router.push("/"); // Redirect back to home page
   };
   const handleShare = async () => {
