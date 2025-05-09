@@ -52,7 +52,7 @@ Rules to follow while generating the quiz:
 `;
 
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const response = await model.generateContent(prompt);
 
     const rawTextResponse = await response.response.text();
